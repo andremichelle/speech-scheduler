@@ -65,10 +65,7 @@ export class Lecture {
             start: (complete) => {
                 const callback = () => complete();
                 const utterance = sentence.createUtterance();
-                const voices = speechSynthesis.getVoices();
-                const voice = voices.find(voice => voice.lang === "en-US");
-                utterance.voice = voice === undefined ? null : voice;
-                utterance.addEventListener('end', () => callback);
+                utterance.addEventListener('end', callback);
                 utterance.addEventListener('boundary', (event) => this.observable.notify({
                     type: 'sentence',
                     sentence: utterance.text,
