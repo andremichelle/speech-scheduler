@@ -1,0 +1,42 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+  font-family: "Open Sans", sans-serif;
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+  color: #eaeaea;
+  background-color: #1A1A1A;
+}
+
+html {
+  width: -webkit-fill-available;
+  height: -webkit-fill-available;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+p {
+  color: black;
+}
+p > span.highlight {
+  color: white;
+}
+
+button {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  font-size: 24px;
+  color: white;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}/*# sourceMappingURL=main.css.map */

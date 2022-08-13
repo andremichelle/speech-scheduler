@@ -136,8 +136,6 @@ export type Observer<VALUE> = (value: VALUE) => void
 
 export interface Observable<VALUE> extends Terminable {
     addObserver(observer: Observer<VALUE>, notify: boolean): Terminable
-
-    removeObserver(observer: Observer<VALUE>): boolean
 }
 
 export class ObservableImpl<T> implements Observable<T> {
@@ -149,16 +147,12 @@ export class ObservableImpl<T> implements Observable<T> {
 
     addObserver(observer: Observer<T>): Terminable {
         this.observers.push(observer)
-        return { terminate: () => this.removeObserver(observer) }
-    }
-
-    removeObserver(observer: Observer<T>): boolean {
-        let index = this.observers.indexOf(observer)
-        if (-1 < index) {
-            this.observers.splice(index, 1)
-            return true
-        }
-        return false
+        return { terminate: () => {
+            const index = this.observers.indexOf(observer)
+            if (-1 < index) {
+                this.observers.splice(index, 1)
+            }
+        } }
     }
 
     terminate(): void {
