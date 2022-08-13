@@ -63,12 +63,12 @@ export class Lecture {
     appendSentence(sentence) {
         return this.appendProcess({
             start: (complete) => {
-                speechSynthesis;
+                const callback = () => complete();
                 const utterance = sentence.createUtterance();
                 const voices = speechSynthesis.getVoices();
                 const voice = voices.find(voice => voice.lang === "en-US");
                 utterance.voice = voice === undefined ? null : voice;
-                utterance.addEventListener('end', () => complete());
+                utterance.addEventListener('end', () => callback);
                 utterance.addEventListener('boundary', (event) => this.observable.notify({
                     type: 'sentence',
                     sentence: utterance.text,
@@ -76,7 +76,12 @@ export class Lecture {
                     charEnd: event.charIndex + event.charLength,
                 }));
                 speechSynthesis.speak(utterance);
-                return { terminate: () => speechSynthesis.cancel() };
+                return {
+                    terminate: () => {
+                        utterance.removeEventListener('end', () => callback);
+                        speechSynthesis.cancel();
+                    }
+                };
             }
         });
     }

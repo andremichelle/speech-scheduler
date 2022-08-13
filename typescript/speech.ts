@@ -95,12 +95,12 @@ export class Lecture implements Observable<LectureEvent> {
     appendSentence(sentence: Sentence): this {
         return this.appendProcess({
             start: (complete: CallableFunction): Terminable => {
-                speechSynthesis
+                const callback = () => complete()
                 const utterance = sentence.createUtterance()
                 const voices = speechSynthesis.getVoices()
                 const voice = voices.find(voice => voice.lang === "en-US")
                 utterance.voice = voice === undefined ? null : voice
-                utterance.addEventListener('end', () => complete())
+                utterance.addEventListener('end', () => callback)
                 utterance.addEventListener('boundary', (event: SpeechSynthesisEvent) => this.observable.notify({
                     type: 'sentence',
                     sentence: utterance.text,
@@ -108,7 +108,12 @@ export class Lecture implements Observable<LectureEvent> {
                     charEnd: event.charIndex + event.charLength,
                 }))
                 speechSynthesis.speak(utterance)
-                return { terminate: () => speechSynthesis.cancel() }
+                return {
+                    terminate: () => {
+                        utterance.removeEventListener('end', () => callback)
+                        speechSynthesis.cancel()
+                    }
+                }
             }
         })
     }
