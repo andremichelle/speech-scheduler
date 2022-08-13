@@ -1,6 +1,6 @@
 import { Events, Terminable } from './lib/common.js'
 import { HTML } from './lib/dom.js'
-import { Callback, Lecture, Sentence } from './speech.js'
+import { Lecture, Sentence } from './speech.js'
 
 const startButton: HTMLElement = HTML.query('button.play')
 startButton.addEventListener('click', async () => {
@@ -16,7 +16,7 @@ startButton.addEventListener('click', async () => {
             .appendEvent(() => document.body.style.backgroundColor = 'black')
             .appendWords('Black it is.'))
         .appendWords('Now I wait for you to click...')
-        .appendProcess({ start: (complete: Callback): Terminable => Events.bind(window, 'click', () => complete()) })
+        .appendProcess({ start: (complete: CallableFunction): Terminable => Events.bind(window, 'click', () => complete()) })
         .appendWords('Now I pause for 1 second for no reason...')
         .appendPause(1)
         .appendEvent(() => document.body.style.backgroundColor = 'orange')
