@@ -74,7 +74,6 @@ export type LectureEvent =
 
 export class Lecture implements Observable<LectureEvent> {
     private readonly observable = new ObservableImpl<LectureEvent>()
-    private readonly synth = window.speechSynthesis
 
     private readonly processes: Process[] = []
 
@@ -96,7 +95,11 @@ export class Lecture implements Observable<LectureEvent> {
     appendSentence(sentence: Sentence): this {
         return this.appendProcess({
             start: (complete: CallableFunction): Terminable => {
+                speechSynthesis
                 const utterance = sentence.createUtterance()
+                const voices = speechSynthesis.getVoices()
+                const voice = voices.find(voice => voice.lang === "en-US")
+                utterance.voice = voice
                 utterance.addEventListener('end', () => complete())
                 utterance.addEventListener('boundary', (event: SpeechSynthesisEvent) => this.observable.notify({
                     type: 'sentence',
@@ -104,8 +107,8 @@ export class Lecture implements Observable<LectureEvent> {
                     charStart: event.charIndex,
                     charEnd: event.charIndex + event.charLength,
                 }))
-                this.synth.speak(utterance)
-                return { terminate: () => this.synth.cancel() }
+                speechSynthesis.speak(utterance)
+                return { terminate: () => speechSynthesis.cancel() }
             }
         })
     }
@@ -148,6 +151,8 @@ export class Lecture implements Observable<LectureEvent> {
     }
 
     async start(): Promise<void> {
+        console.debug('start')
+
         this.running.ifPresent(() => this.cancel())
 
         return new Promise<void>((resolve: () => void, reject: () => void) => {
@@ -171,6 +176,7 @@ export class Lecture implements Observable<LectureEvent> {
     }
 
     cancel(): void {
+        console.debug('cancel')
         this.cancelling = true
         this.running.ifPresent(terminable => terminable.terminate())
         this.running = Options.None

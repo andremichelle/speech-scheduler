@@ -49,7 +49,6 @@ export class Sentence {
 export class Lecture {
     constructor() {
         this.observable = new ObservableImpl();
-        this.synth = window.speechSynthesis;
         this.processes = [];
         this.cancelling = false;
         this.running = Options.None;
@@ -64,7 +63,11 @@ export class Lecture {
     appendSentence(sentence) {
         return this.appendProcess({
             start: (complete) => {
+                speechSynthesis;
                 const utterance = sentence.createUtterance();
+                const voices = speechSynthesis.getVoices();
+                const voice = voices.find(voice => voice.lang === "en-US");
+                utterance.voice = voice;
                 utterance.addEventListener('end', () => complete());
                 utterance.addEventListener('boundary', (event) => this.observable.notify({
                     type: 'sentence',
@@ -72,8 +75,8 @@ export class Lecture {
                     charStart: event.charIndex,
                     charEnd: event.charIndex + event.charLength,
                 }));
-                this.synth.speak(utterance);
-                return { terminate: () => this.synth.cancel() };
+                speechSynthesis.speak(utterance);
+                return { terminate: () => speechSynthesis.cancel() };
             }
         });
     }
@@ -112,6 +115,7 @@ export class Lecture {
     }
     start() {
         return __awaiter(this, void 0, void 0, function* () {
+            console.debug('start');
             this.running.ifPresent(() => this.cancel());
             return new Promise((resolve, reject) => {
                 this.reject = Options.valueOf(reject);
@@ -134,6 +138,7 @@ export class Lecture {
         });
     }
     cancel() {
+        console.debug('cancel');
         this.cancelling = true;
         this.running.ifPresent(terminable => terminable.terminate());
         this.running = Options.None;

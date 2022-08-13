@@ -25,7 +25,6 @@ export declare type LectureEvent = {
 };
 export declare class Lecture implements Observable<LectureEvent> {
     private readonly observable;
-    private readonly synth;
     private readonly processes;
     private cancelling;
     private running;
