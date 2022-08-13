@@ -1,19 +1,26 @@
-@import common
-@import inputs
+$color: #eaeaea
+$background-color: #1A1A1A
+$FONT_SIZE: 11px
+$FONT-FAMILY: 'Open Sans', sans-serif
 
-// test grid. can be removed
+html, body
+  margin: 0
+  padding: 0
+  overflow: hidden
+  position: relative
+  font-family: 'Open Sans', sans-serif
+  -webkit-overflow-scrolling: touch
+  touch-action: manipulation
+  color: $color
+  background-color: $background-color
 
-main
-  width: 100%
-  height: 100%
-  display: grid
-  grid-template: 64px 1fr 64px / 64px 1fr 64px
+html
+  width: -webkit-fill-available
+  height: -webkit-fill-available
 
-  div
-    display: flex
-    align-items: center
-    justify-content: center
-    overflow: hidden
-    font-size: calc(var(--size) * 4)
-    white-space: pre-line
-    line-height: 0.6
+body
+  display: flex
+  align-items: center
+  justify-content: center
+  min-width: 100vw
+  min-height: 100vh

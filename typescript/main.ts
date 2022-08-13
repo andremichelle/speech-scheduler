@@ -1,51 +1,32 @@
-import {Boot, newAudioContext, preloadImagesOfCssFile} from "./lib/boot.js"
-import {LimiterWorklet} from "./audio/limiter/worklet.js"
-import {MeterWorklet} from "./audio/meter/worklet.js"
-import {MetronomeWorklet} from "./audio/metronome/worklet.js"
+import { Events, Terminable } from './lib/common.js'
+import { HTML } from './lib/dom.js'
+import { Callback, Lecture, Sentence } from './speech.js'
 
-const showProgress = (() => {
-    const progress: SVGSVGElement = document.querySelector("svg.preloader")
-    window.onerror = () => progress.classList.add("error")
-    window.onunhandledrejection = () => progress.classList.add("error")
-    return (percentage: number) => progress.style.setProperty("--percentage", percentage.toFixed(2))
-})();
+const startButton: HTMLElement = HTML.query('button.play')
+startButton.addEventListener('click', async () => {
+    startButton.style.display = 'none'
+    const lecture = new Lecture()
+        .appendSentence(new Sentence('Welcome to this lecture.')
+            .appendEvent(() => document.body.style.backgroundColor = 'green')
+            .appendWords('Green!')
+            .appendEvent(() => document.body.style.backgroundColor = 'yellow')
+            .appendWords('Yellow...')
+            .appendEvent(() => document.body.style.backgroundColor = 'orange')
+            .appendWords('Orange?')
+            .appendEvent(() => document.body.style.backgroundColor = 'black')
+            .appendWords('Black it is.'))
+        .appendWords('Now I wait for you to click...')
+        .appendProcess({ start: (complete: Callback): Terminable => Events.bind(window, 'click', () => complete()) })
+        .appendWords('Now I pause for 1 second for no reason...')
+        .appendPause(1)
+        .appendEvent(() => document.body.style.backgroundColor = 'orange')
+        .appendWords(`Uh. I changed it to orange again, which I like.`)
+        .appendWords(`Anyway... Great work! Let's keep in touch!`)
 
-(async () => {
-    console.debug("booting...")
+    // setTimeout(() => lecture.cancel(), 2000) will reject the promise!
 
-    // --- BOOT STARTS ---
+    await lecture.start()
 
-    const boot = new Boot()
-    boot.addObserver(boot => showProgress(boot.normalizedPercentage()))
-    boot.registerProcess(preloadImagesOfCssFile("./bin/main.css"))
-    const context = newAudioContext()
-    boot.registerProcess(LimiterWorklet.loadModule(context))
-    boot.registerProcess(MeterWorklet.loadModule(context))
-    boot.registerProcess(MetronomeWorklet.loadModule(context))
-    await boot.waitForCompletion()
-
-    // --- BOOT ENDS ---
-    const frame = () => {
-        document.querySelector(".center").textContent = `
-            menubar.visible: ${window.menubar.visible}\n
-            devicePixelRatio: ${window.devicePixelRatio}\n
-            screenTop: ${window.screenTop}, screenLeft: ${window.screenLeft}\n
-            iw: ${window.innerWidth}, ih: ${window.innerHeight}\n
-            saw: ${window.screen.availWidth}, sah: ${window.screen.availHeight}\n
-            sw: ${window.screen.width}, sh: ${window.screen.height}`
-        requestAnimationFrame(frame)
-    }
-    frame()
-
-    // prevent dragging entire document on mobile
-    document.addEventListener('touchmove', (event: TouchEvent) => event.preventDefault(), {passive: false})
-    document.addEventListener('dblclick', (event: Event) => event.preventDefault(), {passive: false})
-    const resize = () => document.body.style.height = `${window.innerHeight}px`
-    window.addEventListener("resize", resize)
-    resize()
-    requestAnimationFrame(() => {
-        document.querySelectorAll("body svg.preloader").forEach(element => element.remove())
-        document.querySelectorAll("body main").forEach(element => element.classList.remove("invisible"))
-    })
-    console.debug("boot complete.")
-})()
+    startButton.style.display = 'block'
+    console.log('lecture complete.')
+})
