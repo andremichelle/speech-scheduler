@@ -51,7 +51,7 @@ export class Sentence {
             utterance.onboundary = (event: SpeechSynthesisEvent) => {
                 if (events.length > 0) {
                     if (event.charIndex >= events[0].charIndex) {
-                        events.shift().callback()
+                        events.shift()!.callback()
                     }
                 }
             }
@@ -99,7 +99,7 @@ export class Lecture implements Observable<LectureEvent> {
                 const utterance = sentence.createUtterance()
                 const voices = speechSynthesis.getVoices()
                 const voice = voices.find(voice => voice.lang === "en-US")
-                utterance.voice = voice
+                utterance.voice = voice === undefined ? null : voice
                 utterance.addEventListener('end', () => complete())
                 utterance.addEventListener('boundary', (event: SpeechSynthesisEvent) => this.observable.notify({
                     type: 'sentence',
@@ -161,7 +161,7 @@ export class Lecture implements Observable<LectureEvent> {
             const processes = this.processes.slice()
             const next = () => {
                 if (processes.length > 0) {
-                    this.running = Options.valueOf(processes.shift().start(() => {
+                    this.running = Options.valueOf(processes.shift()!.start(() => {
                         if (!this.cancelling) {
                             next()
                         }
