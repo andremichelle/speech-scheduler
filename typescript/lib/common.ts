@@ -1,7 +1,5 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { Random } from "./math.js"
-
 export type NoArgType<T> = { new(): T }
 
 export interface Terminable {

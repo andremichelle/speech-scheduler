@@ -17,10 +17,8 @@ import { Option, Options, Terminable, TerminableVoid } from "./lib/common.js"
  *  .appendProcess(process: Process): this
  */
 
-export type Callback = () => void
-
 export class Sentence {
-    private readonly events: { charIndex: number, callback: Callback }[] = []
+    private readonly events: { charIndex: number, callback: CallableFunction }[] = []
 
     private editable: boolean = true
 
@@ -33,7 +31,7 @@ export class Sentence {
         return this
     }
 
-    appendEvent(callback: Callback): this {
+    appendEvent(callback: CallableFunction): this {
         console.assert(this.editable)
         this.events.push({ charIndex: this.text.length, callback })
         return this
@@ -59,7 +57,7 @@ export class Sentence {
 
 
 export interface Process {
-    start(complete: Callback): Terminable
+    start(complete: CallableFunction): Terminable
 }
 
 export class Lecture {
@@ -79,18 +77,18 @@ export class Lecture {
 
     appendSentence(sentence: Sentence): this {
         return this.appendProcess({
-            start: (complete: Callback): Terminable => {
+            start: (complete: CallableFunction): Terminable => {
                 const utterance = sentence.createUtterance()
-                utterance.addEventListener('end', complete)
+                utterance.addEventListener('end', () => complete())
                 this.synth.speak(utterance)
                 return { terminate: () => this.synth.cancel() }
             }
         })
     }
 
-    appendEvent(callback: Callback): this {
+    appendEvent(callback: CallableFunction): this {
         return this.appendProcess({
-            start: (complete: Callback): Terminable => {
+            start: (complete: CallableFunction): Terminable => {
                 callback()
                 complete()
                 return TerminableVoid
@@ -100,7 +98,7 @@ export class Lecture {
 
     appendPause(seconds: number): this {
         return this.appendProcess({
-            start: (complete: Callback): Terminable => {
+            start: (complete: CallableFunction): Terminable => {
                 const id = setTimeout(complete, seconds * 1000)
                 return { terminate: () => clearTimeout(id) }
             }
