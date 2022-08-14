@@ -7,7 +7,7 @@ html, body {
   -webkit-overflow-scrolling: touch;
   touch-action: manipulation;
   color: #eaeaea;
-  background-color: #1A1A1A;
+  background-color: black;
 }
 
 html {
@@ -24,7 +24,7 @@ body {
 }
 
 p {
-  color: black;
+  color: green;
 }
 p > span.highlight {
   color: white;

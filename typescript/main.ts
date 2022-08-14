@@ -12,15 +12,19 @@ startButton.addEventListener('click', async () => {
         .appendWords('This is')
         .appendEvent(() => document.body.style.backgroundColor = 'green')
         .appendWords('Green!')
+        .appendBreak()
         .appendWords('This is')
         .appendEvent(() => document.body.style.backgroundColor = 'yellow')
         .appendWords('Yellow...')
+        .appendBreak()
         .appendWords('This is')
         .appendEvent(() => document.body.style.backgroundColor = 'orange')
         .appendWords('Orange?')
+        .appendBreak()
         .appendWords('This is')
         .appendEvent(() => document.body.style.backgroundColor = 'black')
         .appendWords('Black.')
+        .appendBreak()
         .appendWords('Now I wait for you to click...')
         .awaitInteraction({
             start: (complete: CallableFunction): Terminable =>
@@ -41,20 +45,12 @@ startButton.addEventListener('click', async () => {
     body.appendChild(paragraph)
 
     lecture.addObserver((event: LectureEvent) => {
-        while (paragraph.lastChild !== null) {
-            paragraph.lastChild.remove()
-        }
-
         if (event.type === 'sentence') {
-            const c0 = event.sentence.substring(0, event.charStart)
-            const c1 = event.sentence.substring(event.charStart, event.charEnd)
-            const c2 = event.sentence.substring(event.charEnd)
-
-            paragraph.appendChild(HTML.create('span', { textContent: c0 }))
-            paragraph.appendChild(HTML.create('span', { textContent: c1, class: 'highlight' }))
-            paragraph.appendChild(HTML.create('span', { textContent: c2 }))
+            paragraph.textContent = event.sentence
         } else if (event.type === 'interaction') {
-            paragraph.appendChild(HTML.create('span', { textContent: event.message, class: 'highlight' }))
+            paragraph.textContent = event.message
+        } else if (event.type === 'pause') {
+            paragraph.textContent = `pause for ${event.seconds.toFixed(3)} seconds`
         }
     })
 

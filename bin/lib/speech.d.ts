@@ -8,8 +8,6 @@ export interface Interaction extends Process {
 export declare type LectureEvent = {
     type: 'sentence';
     sentence: string;
-    charStart: number;
-    charEnd: number;
 } | {
     type: 'interaction';
     message: string;
@@ -35,7 +33,7 @@ export declare class Lecture implements Observable<LectureEvent> {
     private optCloseParagraph;
     private appendParagraph;
     private appendProcess;
-    start(): Promise<void>;
+    start(lang?: string): Promise<void>;
     cancel(): void;
     terminate(): void;
 }

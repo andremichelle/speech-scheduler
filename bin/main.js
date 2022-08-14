@@ -20,15 +20,19 @@ startButton.addEventListener('click', () => __awaiter(void 0, void 0, void 0, fu
         .appendWords('This is')
         .appendEvent(() => document.body.style.backgroundColor = 'green')
         .appendWords('Green!')
+        .appendBreak()
         .appendWords('This is')
         .appendEvent(() => document.body.style.backgroundColor = 'yellow')
         .appendWords('Yellow...')
+        .appendBreak()
         .appendWords('This is')
         .appendEvent(() => document.body.style.backgroundColor = 'orange')
         .appendWords('Orange?')
+        .appendBreak()
         .appendWords('This is')
         .appendEvent(() => document.body.style.backgroundColor = 'black')
         .appendWords('Black.')
+        .appendBreak()
         .appendWords('Now I wait for you to click...')
         .awaitInteraction({
         start: (complete) => Events.bind(window, 'click', () => complete(), { once: true }),
@@ -44,19 +48,14 @@ startButton.addEventListener('click', () => __awaiter(void 0, void 0, void 0, fu
     const paragraph = HTML.create('p');
     body.appendChild(paragraph);
     lecture.addObserver((event) => {
-        while (paragraph.lastChild !== null) {
-            paragraph.lastChild.remove();
-        }
         if (event.type === 'sentence') {
-            const c0 = event.sentence.substring(0, event.charStart);
-            const c1 = event.sentence.substring(event.charStart, event.charEnd);
-            const c2 = event.sentence.substring(event.charEnd);
-            paragraph.appendChild(HTML.create('span', { textContent: c0 }));
-            paragraph.appendChild(HTML.create('span', { textContent: c1, class: 'highlight' }));
-            paragraph.appendChild(HTML.create('span', { textContent: c2 }));
+            paragraph.textContent = event.sentence;
         }
         else if (event.type === 'interaction') {
-            paragraph.appendChild(HTML.create('span', { textContent: event.message, class: 'highlight' }));
+            paragraph.textContent = event.message;
+        }
+        else if (event.type === 'pause') {
+            paragraph.textContent = `pause for ${event.seconds.toFixed(3)} seconds`;
         }
     });
     yield lecture.start();

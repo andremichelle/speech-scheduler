@@ -5,6 +5,9 @@ import { elseIfUndefined, Observable, ObservableImpl, Observer, Option, Options,
  * we have to workaround to embed events between words and actions, the user has to perform between sentences.
  * The boundary event is a great help, but if you pause the speech, it glitches and sounds broken. 
  * Hence we use speaking only between user-interactions (processes).
+ * 
+ * I had a version where for each word you got an event, 
+ * but Safari does not send all necessary information. Bummer!
  */
 
 class Paragraph {
@@ -41,7 +44,7 @@ export interface Interaction extends Process {
 }
 
 export type LectureEvent =
-    | { type: 'sentence', sentence: string, charStart: number, charEnd: number }
+    | { type: 'sentence', sentence: string }
     | { type: 'interaction', message: string }
     | { type: 'pause', seconds: number }
 
@@ -141,17 +144,15 @@ export class Lecture implements Observable<LectureEvent> {
                 const utterance = new SpeechSynthesisUtterance(paragraph.text)
                 utterance.voice = this.voice
                 utterance.addEventListener('boundary', (event: SpeechSynthesisEvent) => {
-                    this.observable.notify({
-                        type: 'sentence',
-                        sentence: utterance.text,
-                        charStart: event.charIndex,
-                        charEnd: event.charIndex + event.charLength,
-                    })
                     while (events.length > 0 && event.charIndex >= events[0].charIndex) {
                         events.shift()!.callback()
                     }
                 })
                 utterance.addEventListener('end', callback)
+                this.observable.notify({
+                    type: 'sentence',
+                    sentence: utterance.text
+                })
                 speechSynthesis.speak(utterance)
                 return {
                     terminate: () => {
@@ -168,7 +169,7 @@ export class Lecture implements Observable<LectureEvent> {
         return this
     }
 
-    async start(): Promise<void> {
+    async start(lang = 'en-US'): Promise<void> {
         const now = Date.now()
         while (speechSynthesis.getVoices().length === 0) {
             if (Date.now() - now > 1000) {
@@ -176,7 +177,9 @@ export class Lecture implements Observable<LectureEvent> {
             }
             await new Promise(resolve => setTimeout(resolve, 20))
         }
-        this.voice = elseIfUndefined(speechSynthesis.getVoices().find(voice => voice.default), null)
+        speechSynthesis.getVoices().forEach(voice => console.log(voice))
+
+        this.voice = elseIfUndefined(speechSynthesis.getVoices().find(voice => voice.lang === lang), null)
         console.debug(`using voice '${this.voice?.name}'`)
 
         this.optCloseParagraph()

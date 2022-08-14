@@ -115,17 +115,15 @@ export class Lecture {
                 const utterance = new SpeechSynthesisUtterance(paragraph.text);
                 utterance.voice = this.voice;
                 utterance.addEventListener('boundary', (event) => {
-                    this.observable.notify({
-                        type: 'sentence',
-                        sentence: utterance.text,
-                        charStart: event.charIndex,
-                        charEnd: event.charIndex + event.charLength,
-                    });
                     while (events.length > 0 && event.charIndex >= events[0].charIndex) {
                         events.shift().callback();
                     }
                 });
                 utterance.addEventListener('end', callback);
+                this.observable.notify({
+                    type: 'sentence',
+                    sentence: utterance.text
+                });
                 speechSynthesis.speak(utterance);
                 return {
                     terminate: () => {
@@ -140,7 +138,7 @@ export class Lecture {
         this.processes.push(process);
         return this;
     }
-    start() {
+    start(lang = 'en-US') {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const now = Date.now();
@@ -150,7 +148,8 @@ export class Lecture {
                 }
                 yield new Promise(resolve => setTimeout(resolve, 20));
             }
-            this.voice = elseIfUndefined(speechSynthesis.getVoices().find(voice => voice.default), null);
+            speechSynthesis.getVoices().forEach(voice => console.log(voice));
+            this.voice = elseIfUndefined(speechSynthesis.getVoices().find(voice => voice.lang === lang), null);
             console.debug(`using voice '${(_a = this.voice) === null || _a === void 0 ? void 0 : _a.name}'`);
             this.optCloseParagraph();
             this.running.ifPresent(() => this.cancel());
