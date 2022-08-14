@@ -9,24 +9,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Events } from './lib/common.js';
 import { HTML } from './lib/dom.js';
-import { Lecture, Sentence } from './speech.js';
+import { Lecture } from './lib/speech.js';
 const body = HTML.query('body');
 const startButton = HTML.query('button.play');
 startButton.addEventListener('click', () => __awaiter(void 0, void 0, void 0, function* () {
     startButton.style.display = 'none';
     const lecture = new Lecture()
-        .appendSentence(new Sentence()
-        .appendWords('Welcome to this color lecture.')
+        .appendWords('Welcome to this imaginary color lecture.')
+        .appendWords('This is ')
         .appendEvent(() => document.body.style.backgroundColor = 'green')
         .appendWords('Green!')
+        .appendWords('This is ')
         .appendEvent(() => document.body.style.backgroundColor = 'yellow')
         .appendWords('Yellow...')
+        .appendWords('This is ')
         .appendEvent(() => document.body.style.backgroundColor = 'orange')
         .appendWords('Orange?')
+        .appendWords('This is ')
         .appendEvent(() => document.body.style.backgroundColor = 'black')
-        .appendWords('Black it is.'))
+        .appendWords('Black.')
         .appendWords('Now I wait for you to click...')
-        .appendInteraction({
+        .awaitInteraction({
         start: (complete) => Events.bind(window, 'click', () => complete(), { once: true }),
         name: () => 'Please Click!'
     })
@@ -34,7 +37,8 @@ startButton.addEventListener('click', () => __awaiter(void 0, void 0, void 0, fu
         .appendPause(3)
         .appendEvent(() => document.body.style.backgroundColor = 'orange')
         .appendWords(`I changed it to orange again, which I like.`)
-        .appendWords(`Anyway... Great work! Let's keep in touch!`);
+        .appendWords(`Anyway... Great work! Let's keep in touch!`)
+        .appendEvent(() => document.body.style.backgroundColor = 'black');
     const paragraph = HTML.create('p');
     body.appendChild(paragraph);
     lecture.addObserver((event) => {

@@ -1,24 +1,27 @@
 import { Events, Terminable } from './lib/common.js'
 import { HTML } from './lib/dom.js'
-import { Lecture, LectureEvent, Sentence } from './speech.js'
+import { Lecture, LectureEvent } from './lib/speech.js'
 
 const body: HTMLBodyElement = HTML.query('body')
 const startButton: HTMLElement = HTML.query('button.play')
 startButton.addEventListener('click', async () => {
     startButton.style.display = 'none'
     const lecture = new Lecture()
-        .appendSentence(new Sentence()
-            .appendWords('Welcome to this color lecture.')
-            .appendEvent(() => document.body.style.backgroundColor = 'green')
-            .appendWords('Green!')
-            .appendEvent(() => document.body.style.backgroundColor = 'yellow')
-            .appendWords('Yellow...')
-            .appendEvent(() => document.body.style.backgroundColor = 'orange')
-            .appendWords('Orange?')
-            .appendEvent(() => document.body.style.backgroundColor = 'black')
-            .appendWords('Black it is.'))
+        .appendWords('Welcome to this imaginary color lecture.')
+        .appendWords('This is ')
+        .appendEvent(() => document.body.style.backgroundColor = 'green')
+        .appendWords('Green!')
+        .appendWords('This is ')
+        .appendEvent(() => document.body.style.backgroundColor = 'yellow')
+        .appendWords('Yellow...')
+        .appendWords('This is ')
+        .appendEvent(() => document.body.style.backgroundColor = 'orange')
+        .appendWords('Orange?')
+        .appendWords('This is ')
+        .appendEvent(() => document.body.style.backgroundColor = 'black')
+        .appendWords('Black.')
         .appendWords('Now I wait for you to click...')
-        .appendInteraction({
+        .awaitInteraction({
             start: (complete: CallableFunction): Terminable =>
                 Events.bind(window, 'click', () => complete(), { once: true }),
             name: () => 'Please Click!'
@@ -28,6 +31,7 @@ startButton.addEventListener('click', async () => {
         .appendEvent(() => document.body.style.backgroundColor = 'orange')
         .appendWords(`I changed it to orange again, which I like.`)
         .appendWords(`Anyway... Great work! Let's keep in touch!`)
+        .appendEvent(() => document.body.style.backgroundColor = 'black')
 
     // setTimeout(() => lecture.cancel(), 2000) will reject the promise!
 
