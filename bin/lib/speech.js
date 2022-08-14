@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { ObservableImpl, Options } from "./common.js";
+import { elseIfUndefined, ObservableImpl, Options } from "./common.js";
 class Paragraph {
     constructor() {
         this.events = [];
@@ -146,7 +146,7 @@ export class Lecture {
                 }
                 yield new Promise(resolve => setTimeout(resolve, 20));
             }
-            this.voice = speechSynthesis.getVoices().find(voice => voice.default);
+            this.voice = elseIfUndefined(speechSynthesis.getVoices().find(voice => voice.default), null);
             console.debug(`using voice '${(_a = this.voice) === null || _a === void 0 ? void 0 : _a.name}'`);
             this.optCloseParagraph();
             this.running.ifPresent(() => this.cancel());

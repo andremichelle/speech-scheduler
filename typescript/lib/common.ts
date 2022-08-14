@@ -2,6 +2,8 @@
 
 export type NoArgType<T> = { new(): T }
 
+export const elseIfUndefined = <T>(value: T | undefined, fallback: T): T => value === undefined ? fallback : value
+
 export interface Terminable {
     terminate(): void
 }
@@ -20,8 +22,8 @@ export class Terminator implements Terminable {
     }
 
     terminate(): void {
-        while (this.terminables.length) {
-            this.terminables.pop().terminate()
+        while (this.terminables.length > 0) {
+            this.terminables.pop()!.terminate()
         }
     }
 }
@@ -147,12 +149,14 @@ export class ObservableImpl<T> implements Observable<T> {
 
     addObserver(observer: Observer<T>): Terminable {
         this.observers.push(observer)
-        return { terminate: () => {
-            const index = this.observers.indexOf(observer)
-            if (-1 < index) {
-                this.observers.splice(index, 1)
+        return {
+            terminate: () => {
+                const index = this.observers.indexOf(observer)
+                if (-1 < index) {
+                    this.observers.splice(index, 1)
+                }
             }
-        } }
+        }
     }
 
     terminate(): void {

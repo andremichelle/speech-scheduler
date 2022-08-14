@@ -1,4 +1,4 @@
-import { Observable, ObservableImpl, Observer, Option, Options, Terminable, TerminableVoid } from "./common.js"
+import { elseIfUndefined, Observable, ObservableImpl, Observer, Option, Options, Terminable, TerminableVoid } from "./common.js"
 
 /**
  * Since the web-speech-api does not really understand SSML (which would support breaks and markers), 
@@ -172,7 +172,7 @@ export class Lecture implements Observable<LectureEvent> {
             }
             await new Promise(resolve => setTimeout(resolve, 20))
         }
-        this.voice = speechSynthesis.getVoices().find(voice => voice.default)
+        this.voice = elseIfUndefined(speechSynthesis.getVoices().find(voice => voice.default), null)
         console.debug(`using voice '${this.voice?.name}'`)
 
         this.optCloseParagraph()

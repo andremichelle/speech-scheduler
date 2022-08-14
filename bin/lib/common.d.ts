@@ -1,6 +1,7 @@
 export declare type NoArgType<T> = {
     new (): T;
 };
+export declare const elseIfUndefined: <T>(value: T | undefined, fallback: T) => T;
 export interface Terminable {
     terminate(): void;
 }

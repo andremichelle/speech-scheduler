@@ -7,6 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+export const elseIfUndefined = (value, fallback) => value === undefined ? fallback : value;
 export const TerminableVoid = {
     terminate() {
     }
@@ -20,7 +21,7 @@ export class Terminator {
         return terminable;
     }
     terminate() {
-        while (this.terminables.length) {
+        while (this.terminables.length > 0) {
             this.terminables.pop().terminate();
         }
     }
@@ -111,12 +112,14 @@ export class ObservableImpl {
     }
     addObserver(observer) {
         this.observers.push(observer);
-        return { terminate: () => {
+        return {
+            terminate: () => {
                 const index = this.observers.indexOf(observer);
                 if (-1 < index) {
                     this.observers.splice(index, 1);
                 }
-            } };
+            }
+        };
     }
     terminate() {
         this.observers.splice(0, this.observers.length);
