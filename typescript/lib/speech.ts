@@ -65,12 +65,16 @@ export class Lecture implements Observable<LectureEvent> {
 
     appendWords(words: string): this {
         console.debug(`appendWords(${words})`)
-
         if (this.paragraph.isEmpty()) {
             this.paragraph = Options.valueOf(new Paragraph().appendWords(words))
         } else {
             this.paragraph.get().appendWords(words)
         }
+        return this
+    }
+
+    appendBreak(): this {
+        this.optCloseParagraph()
         return this
     }
 

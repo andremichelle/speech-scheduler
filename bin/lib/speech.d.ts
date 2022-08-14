@@ -28,6 +28,7 @@ export declare class Lecture implements Observable<LectureEvent> {
     constructor();
     addObserver(observer: Observer<LectureEvent>): Terminable;
     appendWords(words: string): this;
+    appendBreak(): this;
     appendEvent(callback: CallableFunction): this;
     awaitInteraction(interaction: Interaction): this;
     appendPause(seconds: number): this;

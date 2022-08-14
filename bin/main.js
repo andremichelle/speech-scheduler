@@ -16,16 +16,17 @@ startButton.addEventListener('click', () => __awaiter(void 0, void 0, void 0, fu
     startButton.style.display = 'none';
     const lecture = new Lecture()
         .appendWords('Welcome to this imaginary color lecture.')
-        .appendWords('This is ')
+        .appendBreak()
+        .appendWords('This is')
         .appendEvent(() => document.body.style.backgroundColor = 'green')
         .appendWords('Green!')
-        .appendWords('This is ')
+        .appendWords('This is')
         .appendEvent(() => document.body.style.backgroundColor = 'yellow')
         .appendWords('Yellow...')
-        .appendWords('This is ')
+        .appendWords('This is')
         .appendEvent(() => document.body.style.backgroundColor = 'orange')
         .appendWords('Orange?')
-        .appendWords('This is ')
+        .appendWords('This is')
         .appendEvent(() => document.body.style.backgroundColor = 'black')
         .appendWords('Black.')
         .appendWords('Now I wait for you to click...')
@@ -33,10 +34,11 @@ startButton.addEventListener('click', () => __awaiter(void 0, void 0, void 0, fu
         start: (complete) => Events.bind(window, 'click', () => complete(), { once: true }),
         name: () => 'Please Click!'
     })
-        .appendWords('Now I pause for 3 seconds for no reason...')
+        .appendWords('Now I pause for 3 seconds for no reason.')
         .appendPause(3)
         .appendEvent(() => document.body.style.backgroundColor = 'orange')
         .appendWords(`I changed it to orange again, which I like.`)
+        .appendBreak()
         .appendWords(`Anyway... Great work! Let's keep in touch!`)
         .appendEvent(() => document.body.style.backgroundColor = 'black');
     const paragraph = HTML.create('p');
